@@ -1,0 +1,107 @@
+<!--    *             
+        *              # # # # # #
+        *             #           #
+        *            #             #
+  * * * *   * * * *  #             #  * * * *    * * * *
+*       *  *         #             #  *      *  *
+*       *  *         #             #  *      *  *
+*       *  *          #           #   *      *  *
+ * * * *    * * * *    # # # # # #    *      *   * * * *
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="css/app5.css">
+	<link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+	<title>Memory JS - dconc</title>
+</head>
+
+<body onload="inizializzaGioco()">
+	<div class="navtop">
+		<img src="img/dconc_light.png" class="logo">
+	</div>
+	<div class="content">
+		<h1>Memory JS</h1>
+		<div id="tabellone">
+		</div>
+	</div>
+	<div class="footer">
+		<p>a dconc Project</p>
+	</div>
+</body>
+<script>
+	// Array per le carte girate
+	let carteGirate = [];
+	// Array per le carte abbinate
+	let carteAbbinate = [];
+
+	// Funzione di inizializzazione del gioco
+	function inizializzaGioco() {
+		// Creazione di un array con gli ID delle carte
+		const idCarte = Array.from({ length: 8 }, (_, index) => index + 1);
+		// Duplicazione e mescolamento degli ID
+		const tuttiIdCarte = [...idCarte, ...idCarte];
+		tuttiIdCarte.sort(() => Math.random() - 0.5);
+		// Selezione dei primi 16 ID per il gioco
+		const idCarteSelezionate = tuttiIdCarte.slice(0, 16);
+
+		// Ottenimento del riferimento al tabellone di gioco
+		const tabellone = document.getElementById('tabellone');
+
+		// Creazione delle carte e aggiunta al tabellone
+		for (let i = 0; i < idCarteSelezionate.length; i++) {
+			const carta = document.createElement('div');
+			carta.className = 'memory-card';
+			carta.id = idCarteSelezionate[i];
+			carta.addEventListener('click', giraCarta);
+			tabellone.appendChild(carta);
+		}
+	}
+
+	// Funzione chiamata quando una carta viene girata
+	function giraCarta() {
+		const cartaSelezionata = this;
+		cartaSelezionata.style.background = `url('img/${cartaSelezionata.id}.png') center/cover`;
+		carteGirate.push(cartaSelezionata);
+
+		// Controllo se ci sono due carte girate
+		if (carteGirate.length === 2) {
+			setTimeout(verificaCorrispondenza, 1000);
+		}
+	}
+
+	// Funzione per controllare se le carte girate corrispondono
+	function verificaCorrispondenza() {
+		const [carta1, carta2] = carteGirate;
+
+		// Verifica se le carte corrispondono
+		if (carta1.id === carta2.id) {
+			// Se corrispondono, vengono nascoste
+			carteAbbinate.push(carta1, carta2);
+			carta1.style.visibility = 'hidden';
+			carta2.style.visibility = 'hidden';
+		} else {
+			// Se non corrispondono, vengono ripristinate le immagini di copertura
+			carta1.style.background = 'url("img/0.png") center/cover';
+			carta2.style.background = 'url("img/0.png") center/cover';
+		}
+
+		// Ripristino dell'array delle carte girate
+		carteGirate = [];
+
+		// Controllo se tutte le carte sono abbinate
+		if (carteAbbinate.length === 16) {
+			// Se sì, mostra un messaggio di vittoria
+			setTimeout(() => {
+				alert('Hai Vinto!');
+			}, 500);
+		}
+	}
+</script>
+
+</html>
